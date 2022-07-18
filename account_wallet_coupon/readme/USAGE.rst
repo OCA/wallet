@@ -1,5 +1,5 @@
 Setup
------
+
 * Go to Accounting > Wallet -> Wallet type
 * For the type that will work with coupon -> check the select-box
 
@@ -16,7 +16,7 @@ Setup
    :align: center
 
 Utilization
-------------
+
 
 * Now it's easier to give to you client the unique identifier of his wallet for him to use it later
 * This module also give the possibility to pay an invoice with a coupon (based on code)
