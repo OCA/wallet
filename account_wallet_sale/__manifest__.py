@@ -8,7 +8,7 @@
     "version": "14.0.1.0.1",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV",
-    "website": "https://github.com/acsone/acsone-addons",
+    "website": "https://github.com/OCA/wallet",
     "depends": [
         "sale",
         "account_wallet",
