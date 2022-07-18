@@ -5,9 +5,9 @@
     "name": "Account Wallet Sale Display Discount Amount",
     "summary": """
         Allows to take into account wallet in discounts""",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.0",
     "license": "AGPL-3",
-    "author": "ACSONE SA/NV",
+    "author": "Odoo Community Association (OCA), ACSONE SA/NV",
     "website": "https://github.com/OCA/wallet",
     "depends": [
         "account_wallet_sale",
