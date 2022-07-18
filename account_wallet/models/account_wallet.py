@@ -44,9 +44,6 @@ class AccountWallet(models.Model):
         inverse_name="account_wallet_id",
         string="Journal Items",
     )
-    # TODO: Check if this is necessary
-    # create_date = fields.Date(
-    #    default=fields.Date.today)
 
     _sql_constraints = [
         (
