@@ -17,6 +17,7 @@ def _load_demo(env):
     load_file(env, "account_wallet", "demo", "ir_sequence.xml")
     load_file(env, "account_wallet", "demo", "account_journal.xml")
     load_file(env, "account_wallet", "demo", "account_account.xml")
+    load_file(env, "account_wallet", "demo", "product_product.xml")
     load_file(env, "account_wallet", "demo", "account_wallet_type.xml")
 
 
