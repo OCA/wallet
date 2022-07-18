@@ -7,7 +7,7 @@
         Allows to manage wallet on sale level""",
     "version": "14.0.1.0.1",
     "license": "AGPL-3",
-    "author": "ACSONE SA/NV",
+    "author": "Odoo Community Association (OCA), ACSONE SA/NV",
     "website": "https://github.com/OCA/wallet",
     "depends": [
         "sale",
@@ -20,5 +20,4 @@
         "views/sale_order.xml",
         "wizards/sale_wallet_pay.xml",
     ],
-    "pre_init_hook": "pre_init_hook",
 }
