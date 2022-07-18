@@ -6,7 +6,7 @@
     "version": "14.0.1.2.0",
     "author": "ACSONE SA/NV",
     "category": "Accounting & Finance",
-    "website": "https://github.com/acsone/acsone-addons",
+    "website": "https://github.com/OCA/wallet",
     "depends": [
         "account",
     ],
