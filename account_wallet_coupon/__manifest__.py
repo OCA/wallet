@@ -9,12 +9,14 @@
     "depends": [
         "account_wallet",
         "coupon",
+        "base_generate_code",
     ],
     "external_dependencies": {"python": ["openupgradelib"]},
     "data": [
         "wizards/account_payment_register.xml",
         "security/security.xml",
         "views/account_wallet.xml",
+        "views/company.xml",
         "views/account_wallet_type.xml",
     ],
     "license": "AGPL-3",

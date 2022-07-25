@@ -30,5 +30,5 @@ class AccountWallet(models.Model):
         if not vals.get("coupon_id") and vals.get("wallet_type_id"):
             wallet_type = self.env["account.wallet.type"].browse(vals["wallet_type_id"])
             if wallet_type.with_coupon_code:
-                res.sudo().coupon_id = self.env["coupon.coupon"].create({})
+                res.sudo().coupon_id = self.env["coupon.coupon"].sudo().create({})
         return res
