@@ -47,6 +47,10 @@ class AccountWalletType(models.Model):
         required=True,
     )
 
+    no_anonymous = fields.Boolean(
+        help="Check this box if you want to generate only nominative wallets."
+    )
+
     # TODO: Check if this is necessary and if model cannot be simplified
     # @api.constrains('product_id', 'account_id', 'journal_id')
     # def _check_account(self):

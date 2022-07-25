@@ -13,7 +13,7 @@ class TestWallet(WalletCommon):
             self.wallet.display_name, self.wallet_type.name + " - " + self.wallet.name
         )
 
-    def test_wallet(self):
+    def _test_wallet(self):
         """Buy wallet product
         Check wallet amount
         Pay with wallet
@@ -90,6 +90,17 @@ class TestWallet(WalletCommon):
         )
         self.assertEqual(len(wallet.account_move_line_ids), 2)
         self.assertAlmostEqual(wallet.balance, 0.00, 2)
+        return wallet
+
+    def test_wallet_anonymous(self):
+        self.wallet_type.no_anonymous = False
+        wallet = self._test_wallet()
+        self.assertEqual(wallet.partner_id.id, False)
+
+    def test_wallet_no_anonymous(self):
+        self.wallet_type.no_anonymous = True
+        wallet = self._test_wallet()
+        self.assertEqual(wallet.partner_id.id, self.env.ref("base.res_partner_2").id)
 
     def test_wallet_partner(self):
         """Create wallet with partner

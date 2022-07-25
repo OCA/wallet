@@ -47,6 +47,7 @@
                                 name="company_id"
                                 groups="base.group_multi_company"
                             />
+                            <field name="no_anonymous" />
                         </group>
                     </group>
                 </sheet>

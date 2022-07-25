@@ -58,6 +58,12 @@ class AccountMoveLine(models.Model):
                     "wallet_type_id": wallet_type.id,
                 }
             )
+            if wallet_type.no_anonymous:
+                vals.update(
+                    {
+                        "partner_id": values["partner_id"],
+                    }
+                )
         return vals
 
     def wallet_value(self, vals_list):
