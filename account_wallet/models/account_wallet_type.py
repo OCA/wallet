@@ -39,6 +39,7 @@ class AccountWalletType(models.Model):
         ondelete="restrict",
         help="Product use to fill the wallet",
         required=True,
+        domain="[('type', '=', 'service')]",
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
