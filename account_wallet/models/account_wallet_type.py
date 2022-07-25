@@ -1,7 +1,7 @@
 # © 2015  Laetitia Gangloff, Acsone SA/NV (http://www.acsone.eu)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class AccountWalletType(models.Model):
@@ -38,6 +38,7 @@ class AccountWalletType(models.Model):
         string="Product",
         ondelete="restrict",
         help="Product use to fill the wallet",
+        required=True,
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -92,3 +93,8 @@ class AccountWalletType(models.Model):
             "A wallet type with this account already exists",
         ),
     ]
+
+    @api.onchange("product_id")
+    def onchange_product_id(self):
+        if self.product_id and not self.account_id:
+            self.account_id = self.product_id._get_product_accounts()["income"]
