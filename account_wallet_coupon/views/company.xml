@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV -->
+<odoo>
+  <record model="ir.ui.view" id="view_account_wallet_coupon_company_form">
+    <field name="name">res.company.form (in account_wallet_coupon)</field>
+    <field name="model">res.company</field>
+    <field name="inherit_id" ref="base.view_company_form" />
+    <field name="priority" eval="90" />
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='favicon']" position="after">
+        <field name="code_mask" />
+      </xpath>
+    </field>
+  </record>
+</odoo>
