@@ -73,7 +73,7 @@ class AccountMoveLine(models.Model):
         wallet_obj = self.env["account.wallet"]
         for values in vals_list:
             if not values.get("account_wallet_id"):
-                #  check if account/partner is linked to cagnotte and assign it
+                #  check if account/partner is linked to a wallet and assign it
                 # if it the case
                 wallet = wallet_obj.search(self._get_wallet_domain(values))
                 if wallet:
