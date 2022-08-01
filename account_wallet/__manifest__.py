@@ -15,7 +15,7 @@
         "security/security.xml",
         "security/wallet_base_security.xml",
         "views/wallet_views.xml",
-        "views/wallet_type.xml",
+        "views/account_wallet_type.xml",
         "views/account_move_line.xml",
         "views/account_move.xml",
         "views/res_partner.xml",
