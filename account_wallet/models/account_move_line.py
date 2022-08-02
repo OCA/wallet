@@ -3,8 +3,6 @@
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.osv.expression import FALSE_DOMAIN
-from odoo.tools import float_compare
 from odoo.tools.translate import _
 
 
@@ -31,74 +29,44 @@ class AccountMoveLine(models.Model):
             if partner:
                 line.partner_id = partner
 
-    def _get_wallet_domain(self, values):
-        account_id = values.get("account_id")
-        partner_id = values.get("partner_id")
-        if not account_id or not partner_id:
-            return FALSE_DOMAIN
-        domain = [
-            ("wallet_type_id.account_id", "=", values["account_id"]),
-            ("partner_id", "=", values["partner_id"]),
-        ]
-        return domain
+    def create_or_set_wallet(self):
+        AccountWallet = self.env["account.wallet"]
+        AccountWalletType = self.env["account.wallet.type"]
 
-    def _get_account_wallet_type(self, values):
-        if values.get("account_id"):
-            wallet_type = self.env["account.wallet.type"].search(
-                [("account_id", "=", values["account_id"])]
+        # check if account/partner is linked to a wallet and assign it
+        # if it the case
+        for move_line in self.filtered(lambda x: x.partner_id):
+            wallet_domain = [
+                ("wallet_type_id.account_id", "=", move_line.account_id.id),
+                ("partner_id", "=", move_line.partner_id.id),
+            ]
+            wallet = AccountWallet.search(wallet_domain)
+            if wallet:
+                move_line.write({"account_wallet_id": wallet.id})
+
+        # Create new wallet, if the account match with the account if a wallet_type
+        for move_line in self.filtered(lambda x: not x.account_wallet_id):
+            wallet_type = AccountWalletType.search(
+                [("account_id", "=", move_line.account_id.id)]
             )
-            return wallet_type
+            if not wallet_type:
+                continue
+            move_line.account_wallet_id = AccountWallet.create(
+                move_line._prepare_account_wallet_values(wallet_type)
+            )
 
-    def _prepare_account_wallet_values(self, values):
-        wallet_type = self._get_account_wallet_type(values)
-        vals = {}
-        if wallet_type:
+    def _prepare_account_wallet_values(self, wallet_type):
+        self.ensure_one()
+        vals = {
+            "wallet_type_id": wallet_type.id,
+        }
+        if wallet_type.no_anonymous:
             vals.update(
                 {
-                    "wallet_type_id": wallet_type.id,
+                    "partner_id": self.partner_id.id,
                 }
             )
-            if wallet_type.no_anonymous:
-                vals.update(
-                    {
-                        "partner_id": values["partner_id"],
-                    }
-                )
         return vals
-
-    def wallet_value(self, vals_list):
-        """If used account is on a wallet type,
-        create a wallet
-        """
-        wallet_obj = self.env["account.wallet"]
-        for values in vals_list:
-            if not values.get("account_wallet_id"):
-                #  check if account/partner is linked to a wallet and assign it
-                # if it the case
-                wallet = wallet_obj.search(self._get_wallet_domain(values))
-                if wallet:
-                    values["account_wallet_id"] = wallet.id
-                else:
-                    # If we try to feed the wallet and none is found, create it
-                    comp = float_compare(
-                        values.get("credit", 0.0), 0.0, precision_digits=2
-                    )
-                    if values.get("account_id") and comp != 0:
-                        wallet_values = self._prepare_account_wallet_values(values)
-                        if wallet_values:
-                            # create wallet
-                            values["account_wallet_id"] = (
-                                self.env["account.wallet"].create(wallet_values).id
-                            )
-            elif values.get("account_wallet_id"):
-                wallet = wallet_obj.browse(values["account_wallet_id"])
-                values["partner_id"] = wallet.partner_id.id or values.get("partner_id")
-        return vals_list
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        vals_list = self.wallet_value(vals_list)
-        return super().create(vals_list)
 
     @api.constrains("account_wallet_id", "account_id")
     def _check_wallet_account(self):

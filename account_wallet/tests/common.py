@@ -78,7 +78,7 @@ class WalletCommon(common.SavepointCase):
         return invoice, wallet
 
     def _create_payment_move_wallet(self, debit_amount, wallet):
-
+        old_wallet_balance = wallet.balance
         payment_move = self.env["account.move"].create(
             {
                 "journal_id": wallet.wallet_type_id.journal_id.id,
@@ -106,4 +106,7 @@ class WalletCommon(common.SavepointCase):
                 ],
             }
         )
+        self.assertEqual(wallet.balance, old_wallet_balance)
         payment_move.action_post()
+        self.assertEqual(wallet.balance, old_wallet_balance - debit_amount)
+        return payment_move

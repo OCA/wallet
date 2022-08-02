@@ -88,13 +88,19 @@ class AccountWallet(models.Model):
 
     @api.model
     def _get_compute_balance_fields(self):
-        return ["account_move_line_ids.debit", "account_move_line_ids.credit"]
+        return [
+            "account_move_line_ids.parent_state",
+            "account_move_line_ids.debit",
+            "account_move_line_ids.credit",
+        ]
 
     @api.depends(lambda self: self._get_compute_balance_fields())
     def _compute_balance(self):
         for wallet in self:
             balance = 0
-            for move_line in wallet.account_move_line_ids:
+            for move_line in wallet.account_move_line_ids.filtered(
+                lambda x: x.parent_state == "posted"
+            ):
                 balance += move_line.credit - move_line.debit
             wallet.balance = balance
 

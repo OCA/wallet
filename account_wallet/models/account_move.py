@@ -15,3 +15,7 @@ class AccountMove(models.Model):
         help="Use this field to give coupon to a customer",
         states={"draft": [("readonly", False)]},
     )
+
+    def action_post(self):
+        self.mapped("line_ids").create_or_set_wallet()
+        return super().action_post()
