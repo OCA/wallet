@@ -47,6 +47,7 @@
                                 name="company_id"
                                 groups="base.group_multi_company"
                             />
+                            <field name="only_nominative" />
                             <field name="automatic_nominative_creation" />
                         </group>
                     </group>

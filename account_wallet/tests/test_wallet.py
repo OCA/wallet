@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 from psycopg2 import IntegrityError
 
+from odoo.exceptions import ValidationError
 from odoo.tools import mute_logger
 
 from .common import WalletCommon
@@ -72,6 +73,17 @@ class TestWallet(WalletCommon):
                 wallet_2.write({"active": True})
 
         self.wallet.write({"active": False})
+
+    def test_wallet_partner_required(self):
+        self.wallet.partner_id = self.partner
+        self.wallet_type.write(
+            {
+                "only_nominative": True,
+                "automatic_nominative_creation": True,
+            }
+        )
+        with self.assertRaises(ValidationError):
+            self.wallet.partner_id = False
 
     def test_wallet_credit_note(self):
         partner = self.env["res.partner"].create({"name": "Test Wallet credit_notes"})

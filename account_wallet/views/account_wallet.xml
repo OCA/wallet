@@ -85,8 +85,12 @@
                             </h1>
                         </div>
                        <group>
-                            <field name="partner_id" />
                             <field name="wallet_type_id" />
+                            <field name="only_nominative" invisible="1" />
+                            <field
+                            name="partner_id"
+                            attrs="{'required': [('only_nominative', '=', True)]}"
+                        />
                             <field name="company_currency_id" invisible="1" />
                             <field
                             name="balance"

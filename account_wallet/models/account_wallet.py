@@ -19,6 +19,7 @@ class AccountWallet(models.Model):
     wallet_type_id = fields.Many2one(
         "account.wallet.type", "Wallet Type", required=True, ondelete="restrict"
     )
+    only_nominative = fields.Boolean(related="wallet_type_id.only_nominative")
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
@@ -63,6 +64,18 @@ class AccountWallet(models.Model):
                     _("Partner can not be defined on a wallet with journal items")
                 )
         return True
+
+    @api.constrains("partner_id", "wallet_type_id")
+    def _check_only_nominative(self):
+        wallets = self.filtered(lambda x: not x.partner_id and x.only_nominative)
+        if wallets:
+            raise ValidationError(
+                _(
+                    "You have to set a partner on the wallets %s"
+                    "because the wallet type allow only nominative wallets."
+                    % ",".join(wallets.mapped("name"))
+                )
+            )
 
     def _get_name(self):
         """
