@@ -60,7 +60,7 @@ class AccountMoveLine(models.Model):
         vals = {
             "wallet_type_id": wallet_type.id,
         }
-        if wallet_type.no_anonymous:
+        if wallet_type.automatic_nominative_creation:
             vals.update(
                 {
                     "partner_id": self.partner_id.id,

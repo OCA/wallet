@@ -15,7 +15,7 @@ class TestWallet(WalletCommon):
 
     def test_wallet_anonymous(self):
         # Default Configuration
-        self.wallet_type.no_anonymous = False
+        self.wallet_type.automatic_nominative_creation = False
 
         # Credit Wallet
         invoice, wallet = self._create_invoice_credit_wallet(100)
@@ -33,7 +33,7 @@ class TestWallet(WalletCommon):
     def test_wallet_with_partner(self):
 
         # Forbid anonymous wallet
-        self.wallet_type.no_anonymous = True
+        self.wallet_type.automatic_nominative_creation = True
 
         # Credit Wallet
         invoice, wallet = self._create_invoice_credit_wallet(200)

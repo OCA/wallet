@@ -48,8 +48,9 @@ class AccountWalletType(models.Model):
         required=True,
     )
 
-    no_anonymous = fields.Boolean(
-        help="Check this box if you want to generate only nominative wallets."
+    automatic_nominative_creation = fields.Boolean(
+        help="Check this box if you want to automaticaly create nominative wallets"
+        " (related to a partner) when selling products related to a wallet type."
     )
 
     _sql_constraints = [

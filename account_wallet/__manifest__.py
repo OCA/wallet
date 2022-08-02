@@ -3,7 +3,7 @@
 
 {
     "name": "Account Wallet",
-    "version": "14.0.1.0.0",
+    "version": "14.0.2.0.0",
     "author": "Odoo Community Association (OCA), ACSONE SA/NV",
     "category": "Accounting & Finance",
     "website": "https://github.com/OCA/wallet",
