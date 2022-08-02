@@ -23,43 +23,87 @@ class WalletCommon(common.SavepointCase):
     def setUpClass(cls):
         super(WalletCommon, cls).setUpClass()
         load_file(cls.cr, "account_wallet", "tests/data/", "account_wallet_data.xml")
-        cls.wallet_obj = cls.env["account.wallet"]
-        cls.account = cls.env.ref("account_wallet.wallet")
-        cls.partner_account = cls.env["account.account"].search(
-            [("user_type_id.type", "=", "receivable")], limit=1
-        )
+        cls.AccountWallet = cls.env["account.wallet"]
+
+        cls.wallet_account = cls.env.ref("account_wallet.wallet_account")
         cls.wallet_journal = cls.env.ref("account_wallet.wallet_journal")
         cls.wallet_type = cls.env.ref("account_wallet.wallet_type")
-        vals = {
-            "wallet_type_id": cls.wallet_type.id,
-        }
-        cls.wallet = cls.wallet_obj.create(vals)
         cls.partner = cls.env.ref("base.res_partner_2")
 
-    def _provision_wallet(self, amount, wallet=None):
-        if not wallet:
-            wallet = self.wallet
-        vals = {
-            "journal_id": wallet.wallet_type_id.journal_id.id,
-        }
-        self.move = self.env["account.move"].create(vals)
-        vals = {
-            "name": "Credit Wallet",
-            "credit": amount,
-            "debit": 0,
-            "account_wallet_id": wallet.id,
-            "account_id": wallet.wallet_type_id.account_id.id,
-            "move_id": self.move.id,
-        }
-        self.env["account.move.line"].with_context(check_move_validity=False).create(
-            vals
+        cls.receivable_account = cls.env["account.account"].search(
+            [("user_type_id.type", "=", "receivable")], limit=1
         )
-        vals = {
-            "name": "Credit Wallet",
-            "credit": 0,
-            "debit": amount,
-            "account_id": self.partner_account.id,
-            "move_id": self.move.id,
-        }
-        self.env["account.move.line"].create(vals)
-        self.move.action_post()
+
+        cls.wallet = cls.AccountWallet.create(
+            {
+                "wallet_type_id": cls.wallet_type.id,
+            }
+        )
+
+    def _create_invoice_credit_wallet(self, credit_amount):
+        """
+        - Create an invoice to credit a wallet
+        - post the invoice
+        - check if the wallet is created (or associated)
+        - return the invoice and the wallet
+        """
+
+        invoice = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.env.ref("base.res_partner_2").id,
+                "invoice_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "set 100 in my wallet",
+                            "quantity": 1,
+                            "price_unit": credit_amount,
+                            "product_id": self.wallet_type.product_id.id,
+                            "account_id": self.wallet_type.account_id.id,
+                        },
+                    )
+                ],
+            }
+        )
+        invoice.action_post()
+        has_wallet = False
+        for line in invoice.invoice_line_ids:
+            if line.account_id.id == self.wallet_type.account_id.id:
+                wallet = line.account_wallet_id
+                self.assertTrue(wallet.wallet_type_id.id, self.wallet_type.id)
+                has_wallet = True
+        self.assertTrue(has_wallet)
+        return invoice, wallet
+
+    def _create_payment_move_wallet(self, debit_amount, wallet):
+
+        payment_move = self.env["account.move"].create(
+            {
+                "journal_id": wallet.wallet_type_id.journal_id.id,
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "account_id": wallet.wallet_type_id.account_id.id,
+                            "partner_id": wallet.partner_id.id,
+                            "account_wallet_id": wallet.id,
+                            "name": "payment with my wallet",
+                            "debit": debit_amount,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "account_id": self.receivable_account.id,
+                            "name": "payment with my wallet",
+                            "credit": debit_amount,
+                        },
+                    ),
+                ],
+            }
+        )
+        payment_move.action_post()
