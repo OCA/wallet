@@ -19,7 +19,7 @@ class TestWallet(WalletCommon):
         self.wallet_type.automatic_nominative_creation = False
 
         # Credit Wallet
-        invoice, wallet = self._create_invoice_credit_wallet(100)
+        wallet_invoice, wallet = self._create_invoice_credit_wallet(100)
 
         self.assertEqual(wallet.partner_id.id, False)
         self.assertAlmostEqual(wallet.balance, 100.00, 2)
@@ -30,6 +30,22 @@ class TestWallet(WalletCommon):
         self.assertEqual(wallet.partner_id.id, False)
         self.assertEqual(len(wallet.account_move_line_ids), 2)
         self.assertAlmostEqual(wallet.balance, 0.00, 2)
+
+    def test_wallet_account_payment_register(self):
+        # Default Configuration
+        self.wallet_type.automatic_nominative_creation = False
+
+        # Credit Wallet
+        wallet_invoice, wallet = self._create_invoice_credit_wallet(300)
+
+        sale_invoice = self._create_invoice_sale("out_invoice", 200)
+
+        # Debit Wallet
+        self._create_payment_move_wallet_via_wizard(sale_invoice, 180, wallet)
+        self.assertEqual(sale_invoice.payment_state, "partial")
+        self._create_payment_move_wallet_via_wizard(sale_invoice, 20, wallet)
+        self.assertEqual(sale_invoice.payment_state, "paid")
+        self.assertAlmostEqual(wallet.balance, 100.00, 2)
 
     def test_wallet_with_partner(self):
 

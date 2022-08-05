@@ -71,12 +71,20 @@ class AccountMoveLine(models.Model):
     @api.constrains("account_wallet_id", "account_id")
     def _check_wallet_account(self):
         """Account must correspond to wallet account"""
-        if any(
-            line.account_wallet_id
-            and line.account_wallet_id.wallet_type_id.account_id != line.account_id
-            for line in self
-        ):
-            raise ValidationError(
-                _("The account doesn't correspond to the wallet account")
-            )
-        return True
+        incorrect_lines = self.filtered(
+            lambda x: x.account_wallet_id
+            and x.account_wallet_id.wallet_type_id.account_id != x.account_id
+        )
+        if incorrect_lines:
+            msg = []
+            for line in incorrect_lines:
+                msg.append(
+                    _(
+                        "The move line account %s doesn't correspond to the wallet account %s"
+                    )
+                    % (
+                        line.account_id.display_name,
+                        line.account_wallet_id.wallet_type_id.account_id.display_name,
+                    )
+                )
+            raise ValidationError("\n".join(msg))
