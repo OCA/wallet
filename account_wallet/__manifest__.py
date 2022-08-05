@@ -3,7 +3,7 @@
 
 {
     "name": "Account Wallet",
-    "version": "14.0.2.0.0",
+    "version": "14.0.3.0.0",
     "author": "Odoo Community Association (OCA), ACSONE SA/NV",
     "category": "Accounting & Finance",
     "website": "https://github.com/OCA/wallet",
@@ -21,7 +21,6 @@
         "views/res_partner.xml",
         "wizards/wizard_account_move_credit_notes_wallet.xml",
         "wizards/account_payment_register.xml",
-        "views/wallet_settings.xml",
     ],
     "license": "AGPL-3",
     "post_init_hook": "post_init_hook",

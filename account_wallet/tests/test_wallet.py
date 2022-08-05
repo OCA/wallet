@@ -119,13 +119,12 @@ class TestWallet(WalletCommon):
 
     def test_wallet_credit_note(self):
         partner = self.env["res.partner"].create({"name": "Test Wallet credit_notes"})
-        product = self.env["product.product"].search([], limit=1)
+        product = self.env.ref("account_wallet.product_product_credit_note_wallet")
         values = {
             "account_wallet_type_id": self.wallet_type.id,
             "amount": 50,
             "partner_id": partner.id,
             "invoice_date": "2022-05-18",
-            "product_id": product.id,
         }
         wizard = self.env["wizard.account_move_credit_notes.wallet"].create(values)
         wizard.apply()

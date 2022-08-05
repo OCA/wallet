@@ -8,15 +8,6 @@ class AccountMoveCreditNote(models.TransientModel):
     _name = "wizard.account_move_credit_notes.wallet"
     _description = "Credit Note By Wallet"
 
-    def _get_default_product_id(self):
-        config = self.env["ir.config_parameter"]
-        param = "account_move_credit_notes_wallet_default_product"
-        default_product_id = config.sudo().get_param(param)
-        product = self.env["product.product"].browse()
-        if default_product_id:
-            product = self.env["product.product"].browse(int(default_product_id))
-        return product
-
     account_wallet_type_id = fields.Many2one(
         comodel_name="account.wallet.type",
         string="Wallet type",
@@ -32,15 +23,6 @@ class AccountMoveCreditNote(models.TransientModel):
 
     invoice_date = fields.Date(string="Invoice Date", default=fields.Date.today)
 
-    product_id = fields.Many2one(
-        comodel_name="product.product",
-        string="Product",
-        required=True,
-        ondelete="cascade",
-        domain="[('type', '=', 'service')]",
-        default=_get_default_product_id,
-    )
-
     def _prepare_move_values(self):
         line_values = self._prepare_move_line_values()
         values = {
@@ -53,15 +35,16 @@ class AccountMoveCreditNote(models.TransientModel):
         return values
 
     def _prepare_move_line_values(self):
+        credit_product = self.account_wallet_type_id.credit_note_product_id
         values = [
             (
                 0,
                 False,
                 {
-                    "product_id": self.product_id.id,
+                    "product_id": credit_product.id,
                     "quantity": 1,
                     "price_unit": self.amount,
-                    "name": self.product_id.display_name,
+                    "name": credit_product.display_name,
                 },
             )
         ]

@@ -60,6 +60,13 @@ class AccountWalletType(models.Model):
         " wallet for 'Gifts' (Customer pay a wallet to make a gift to another customer)"
     )
 
+    credit_note_product_id = fields.Many2one(
+        comodel_name="product.product",
+        string="Credit Note Product",
+        help="This product will be used in the 'Credit Note with Wallet' Wizard",
+        domain="[('type', '=', 'service')]",
+    )
+
     _sql_constraints = [
         (
             "product_wallet_type_uniq",

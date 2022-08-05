@@ -9,4 +9,11 @@
         <field name="user_type_id" ref="account.data_account_type_prepayments" />
         <field name="code">14101</field>
     </record>
+
+    <record id="account_wallet_credit_note" model="account.account">
+        <field name="name">Credit note for Wallet</field>
+        <field name="user_type_id" ref="account.data_account_type_expenses" />
+        <field name="code">6040</field>
+    </record>
+
 </odoo>
