@@ -20,6 +20,8 @@ class AccountPayment(models.Model):
         )
         if self.account_wallet_id:
             for vals in res:
-                if vals["debit"] > 0:
+                if self.payment_type == "inbound" and vals["debit"] > 0:
+                    vals.update({"account_wallet_id": self.account_wallet_id.id})
+                if self.payment_type == "outbound" and vals["credit"] > 0:
                     vals.update({"account_wallet_id": self.account_wallet_id.id})
         return res

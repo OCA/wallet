@@ -47,6 +47,22 @@ class TestWallet(WalletCommon):
         self.assertEqual(sale_invoice.payment_state, "paid")
         self.assertAlmostEqual(wallet.balance, 100.00, 2)
 
+    def test_wallet_account_payment_register_refund(self):
+        # Default Configuration
+        self.wallet_type.automatic_nominative_creation = False
+
+        # Credit Wallet
+        wallet_invoice, wallet = self._create_invoice_credit_wallet(300)
+
+        refund_invoice = self._create_invoice_sale("out_refund", 200)
+
+        # Debit Wallet
+        self._create_payment_move_wallet_via_wizard(refund_invoice, 180, wallet)
+        self.assertEqual(refund_invoice.payment_state, "partial")
+        self._create_payment_move_wallet_via_wizard(refund_invoice, 20, wallet)
+        self.assertEqual(refund_invoice.payment_state, "paid")
+        self.assertAlmostEqual(wallet.balance, 500.00, 2)
+
     def test_wallet_with_partner(self):
 
         # Forbid anonymous wallet
