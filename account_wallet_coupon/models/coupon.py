@@ -21,5 +21,6 @@ class CouponCoupon(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        res.code = res._generate_code()
+        if not vals.get("code"):
+            res.code = res._generate_code()
         return res
